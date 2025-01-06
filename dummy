@@ -1,0 +1,34 @@
+MOD = 10**9 + 7
+
+def count_hikes():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    
+    # Read m and n
+    m, n = int(data[0]), int(data[1])
+    
+    # Read short trails (s) and long trails (l)
+    s = list(map(int, data[2:2 + m]))
+    l = list(map(int, data[2 + m:2 + 2 * m]))
+    
+    # Initialize the dp table
+    dp = [[0] * m for _ in range(n + 1)]
+    
+    # Base case: Day 0, Harry starts at cabin 1 (index 0)
+    dp[0][0] = 1  # Cabin 1 is index 0 in 0-based indexing
+    
+    # Fill the DP table
+    for day in range(1, n + 1):
+        for j in range(m):  # Current cabin (j)
+            dp[day][j] = 0
+            for k in range(m):  # Previous cabin (k)
+                # Add all valid transitions from cabin k to cabin j
+                dp[day][j] += dp[day - 1][k] * (s[k] * s[j] + s[k] * l[j] + l[k] * s[j])
+                dp[day][j] %= MOD  # Take modulo to avoid overflow
+    
+    # Compute the final result: Sum of all ways to end at any cabin on day n
+    result = sum(dp[n]) % MOD
+    print(result)
+
+count_hikes()
